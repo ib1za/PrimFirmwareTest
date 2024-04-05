@@ -7,6 +7,7 @@
 #include <QLabel>
 #include <QSlider>
 #include <QObject>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -30,6 +31,7 @@ MainWindow::~MainWindow()
 
 QString fileContents;
 QString lastNumber;
+QString firstNumber;
 
 void MainWindow::on_openPushButton_clicked()
 {
@@ -58,7 +60,10 @@ void MainWindow::on_readPushButton_clicked()
 {
     bool ok;
     ui->textBrowser->setPlainText(fileContents);
+    firstNumber = fileContents.mid(309, 2);
     lastNumber = fileContents.mid(363, 2);
+    qDebug() << "first Number "<<firstNumber;
+    qDebug() << "last Number "<<lastNumber;
     ui->slider->setValue(lastNumber.toInt(&ok, 16));
     ui->spinBox->setValue(lastNumber.toInt(&ok, 16));
 }
