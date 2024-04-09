@@ -17,10 +17,14 @@ public:
 
 private slots:
 
-
+    void validateSpinBoxValue(int value);
     void on_openPushButton_clicked();
 
     void on_readPushButton_clicked();
+
+    void on_savePushButton_clicked();
+
+    void on_pushButton_clicked();
 
 private:
     Ui::MainWindow *ui;
