@@ -8,6 +8,10 @@
 #include <QSlider>
 #include <QObject>
 #include <QDebug>
+#include <QProcess>
+#include <QTimer>
+#include <QThread>
+#include <QByteArray>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -23,6 +27,9 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), ui->slider, &QSlider::setValue);
     QObject::connect(ui->slider, &QSlider::valueChanged, ui->spinBox, &QSpinBox::setValue);
     QObject::connect(ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::validateSpinBoxValue);
+    connect(&process, &QProcess::readyReadStandardOutput, this, &MainWindow::readOutput);
+    connect(&process, &QProcess::readyReadStandardError, this, &MainWindow::readError);
+    connect(&timer, &QTimer::timeout, this, &MainWindow::displayNextLine);
 }
 
 MainWindow::~MainWindow()
@@ -158,10 +165,88 @@ void MainWindow::on_savePushButton_clicked()
 
 }
 
+void MainWindow::readOutput() {
+    QByteArray output = process.readAllStandardOutput();
+    outputBuffer.append(output.split('\n'));
+
+    // Start displaying lines if not already started
+    if (!timer.isActive()) {
+        displayNextLine();
+    }
+}
+
+void MainWindow::readError() {
+    // Check if there are lines to display
+    if (!outputBuffer.isEmpty()) {
+        // Display the next line in the QTextBrowser
+        ui->textBrowser->append(QString::fromUtf8(outputBuffer.takeFirst()));
+
+        // Start the timer again for the next line
+        timer.start(1000);
+    }
+}
+
+void MainWindow::displayNextLine() {
+    // Check if there are lines to display
+    if (!outputBuffer.isEmpty()) {
+        // Display the next line in the QTextBrowser
+        ui->textBrowser->append(QString::fromUtf8(outputBuffer.takeFirst()));
+
+        // Start the timer again for the next line
+        timer.start(1000);
+    }
+}
+
+
 
 void MainWindow::on_pushButton_clicked()
 {
     ui->textBrowser->setPlainText(ui->filePathLabel->text().remove("File: ")+"\n");
+    // Create a QProcess instance
+   /* QProcess process;
 
+    // Set the command to start cmd.exe and run the ping command
+    QStringList arguments;
+    arguments << "/c" << "ping 127.0.0.1 -n 1"; // "-n 1" means ping only once
+    process.start("cmd.exe", arguments);
+
+    // Start reading output
+    connect(&process, &QProcess::readyReadStandardOutput, [=, &process]() {
+        QByteArray output = process.readAllStandardOutput();
+        ui->textBrowser->append(QString::fromLocal8Bit(output));
+    });
+
+    // Start reading error output
+    connect(&process, &QProcess::readyReadStandardError, [=, &process]() {
+        QByteArray error = process.readAllStandardError();
+        ui->textBrowser->append(QString::fromLocal8Bit(error));
+    });
+
+    // Wait for the process to finish
+    process.waitForFinished(-1);
+
+    // Check the exit code
+    if (process.exitCode() == 0) {
+        ui->textBrowser->append("Ping completed successfully.");
+    } else {
+        ui->textBrowser->append("Ping failed.");
+    }
+    */
+
+    QString program = "cmd.exe";
+    QStringList arguments;
+    arguments << "/c" << "ping 127.0.0.1 -n 1"; // "-n 1" means ping only once
+
+    // Start the process
+    process.start(program, arguments);
+
+    // Connect signals to slots
+    connect(&process, &QProcess::readyReadStandardOutput, this, &MainWindow::readOutput);
+    connect(&process, &QProcess::readyReadStandardError, this, &MainWindow::readError);
+
+    // Start a timer with a 1-second interval
+    timer.start(1000);
 }
+
+
 

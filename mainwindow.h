@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QProcess>
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -12,8 +14,12 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+public slots:
+    void readOutput();
+    void readError();
+    void displayNextLine();
 
 private slots:
 
@@ -24,9 +30,12 @@ private slots:
 
     void on_savePushButton_clicked();
 
-    void on_pushButton_clicked();
+    void on_pushButton_clicked();     
 
 private:
+    QProcess process;
+    QList<QByteArray> outputBuffer;
+    QTimer timer;
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H
