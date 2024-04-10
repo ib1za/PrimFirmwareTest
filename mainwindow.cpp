@@ -240,9 +240,6 @@ void MainWindow::on_pushButton_clicked()
     // Start the process
     process.start(program, arguments);
 
-    // Connect signals to slots
-    connect(&process, &QProcess::readyReadStandardOutput, this, &MainWindow::readOutput);
-    connect(&process, &QProcess::readyReadStandardError, this, &MainWindow::readError);
 
     // Start a timer with a 1-second interval
     timer.start(1000);
