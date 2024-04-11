@@ -37,5 +37,6 @@ private:
     QList<QByteArray> outputBuffer;
     QTimer timer;
     Ui::MainWindow *ui;
+    int kfc =0;
 };
 #endif // MAINWINDOW_H

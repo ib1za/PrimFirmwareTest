@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -9,6 +12,12 @@
     <width>342</width>
     <height>400</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
@@ -59,7 +68,7 @@
       <x>10</x>
       <y>150</y>
       <width>321</width>
-      <height>211</height>
+      <height>221</height>
      </rect>
     </property>
    </widget>
@@ -81,7 +90,7 @@
      <rect>
       <x>10</x>
       <y>80</y>
-      <width>261</width>
+      <width>241</width>
       <height>25</height>
      </rect>
     </property>
@@ -92,9 +101,9 @@
    <widget class="QSpinBox" name="spinBox">
     <property name="geometry">
      <rect>
-      <x>281</x>
+      <x>261</x>
       <y>80</y>
-      <width>51</width>
+      <width>71</width>
       <height>22</height>
      </rect>
     </property>

@@ -18,6 +18,11 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+   //
+    //setFixedSize(sizeHint());
+   // setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
+    //setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint);
+    setFixedSize(size());
     ui->slider->setMinimum(0);
     ui->slider->setMaximum(247);
     ui->spinBox->setMinimum(0);
