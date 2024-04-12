@@ -18,10 +18,6 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-   //
-    //setFixedSize(sizeHint());
-   // setWindowFlags(Qt::Window | Qt::CustomizeWindowHint);
-    //setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint);
     setFixedSize(size());
     ui->slider->setMinimum(0);
     ui->slider->setMaximum(247);
@@ -72,16 +68,16 @@ void MainWindow::on_openPushButton_clicked()
 
 
         ui->filePathLabel->setText("File: " + filePath);
-    } else {
+    } /*else {
         QMessageBox::information(this, "Information", "No file selected.");
     }
+*/
 }
 
 
 void MainWindow::on_readPushButton_clicked()
 {
     bool ok;
-    //ui->textBrowser->setPlainText(fileContents);
     firstNumber = fileContents.mid(306, 2);
     lastNumber = fileContents.mid(363, 2);
     qDebug() << "first Number "<<firstNumber;
@@ -134,25 +130,6 @@ void MainWindow::on_savePushButton_clicked()
         }
 
     }
-
-   /* for (i = 0; i<=3*19; i+=3) {
-        qDebug() << "i = " << i <<", fileContents.mid("<<306+i<<", 2) = " << fileContents.mid(306+i, 2)<<")";
-        decValue = fileContents.mid(306+i, 2).toInt(&ok, 16);
-        result = decValue * ui->spinBox->value()/19;
-        qDebug()<<"decValue var is "<<decValue<<", result is "<<result;
-        hexResult = QString::number(result, 16).toUpper();
-        qDebug()<<"result in hex is "<< hexResult;
-        if (hexResult.length() == 1) {
-            hexResult.prepend('0');
-        }
-        fileContents.replace(306 + i, 2, hexResult);
-        qDebug()<<"after all, fileContents.mid("<<306+i<<", 2) = "<< fileContents.mid(306+i,2);
-        qDebug()<<"and, fileContents.mid("<<306+i<<", 5) = "<< fileContents.mid(306+i,5);
-    }
-    */
-    //ui->textBrowser->setPlainText(fileContents);
-
-
     QString filePath = ui->filePathLabel->text().remove("File: ");
 
     QFile file(filePath);
@@ -172,32 +149,30 @@ void MainWindow::on_savePushButton_clicked()
 
 void MainWindow::readOutput() {
     QByteArray output = process.readAllStandardOutput();
-    outputBuffer.append(output.split('\n'));
+    QList<QByteArray> lines = output.split('\n');
 
-    // Start displaying lines if not already started
+    for (const QByteArray& line : lines) {
+        QByteArray trimmedLine = line.trimmed();
+        if ((trimmedLine.startsWith("Reply from") || trimmedLine.startsWith("Pinging"))) {
+            outputBuffer.append(trimmedLine);
+        }
+    }
+
     if (!timer.isActive()) {
         displayNextLine();
     }
 }
 
 void MainWindow::readError() {
-    // Check if there are lines to display
     if (!outputBuffer.isEmpty()) {
-        // Display the next line in the QTextBrowser
         ui->textBrowser->append(QString::fromUtf8(outputBuffer.takeFirst()));
-
-        // Start the timer again for the next line
         timer.start(1000);
     }
 }
 
 void MainWindow::displayNextLine() {
-    // Check if there are lines to display
     if (!outputBuffer.isEmpty()) {
-        // Display the next line in the QTextBrowser
         ui->textBrowser->append(QString::fromUtf8(outputBuffer.takeFirst()));
-
-        // Start the timer again for the next line
         timer.start(1000);
     }
 }
@@ -207,46 +182,9 @@ void MainWindow::displayNextLine() {
 void MainWindow::on_pushButton_clicked()
 {
     ui->textBrowser->setPlainText(ui->filePathLabel->text().remove("File: ")+"\n");
-    // Create a QProcess instance
-   /* QProcess process;
-
-    // Set the command to start cmd.exe and run the ping command
     QStringList arguments;
-    arguments << "/c" << "ping 127.0.0.1 -n 1"; // "-n 1" means ping only once
-    process.start("cmd.exe", arguments);
-
-    // Start reading output
-    connect(&process, &QProcess::readyReadStandardOutput, [=, &process]() {
-        QByteArray output = process.readAllStandardOutput();
-        ui->textBrowser->append(QString::fromLocal8Bit(output));
-    });
-
-    // Start reading error output
-    connect(&process, &QProcess::readyReadStandardError, [=, &process]() {
-        QByteArray error = process.readAllStandardError();
-        ui->textBrowser->append(QString::fromLocal8Bit(error));
-    });
-
-    // Wait for the process to finish
-    process.waitForFinished(-1);
-
-    // Check the exit code
-    if (process.exitCode() == 0) {
-        ui->textBrowser->append("Ping completed successfully.");
-    } else {
-        ui->textBrowser->append("Ping failed.");
-    }
-    */
-
-    QString program = "cmd.exe";
-    QStringList arguments;
-    arguments << "/c" << "ping 127.0.0.1 -n 1"; // "-n 1" means ping only once
-
-    // Start the process
-    process.start(program, arguments);
-
-
-    // Start a timer with a 1-second interval
+    arguments << "/c" << "ping 127.0.0.1 -n 1";
+    process.start("cmd.exe", {"/c", "ping 127.0.0.1 -n 1"});
     timer.start(1000);
 }
 
